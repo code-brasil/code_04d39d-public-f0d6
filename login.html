@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dama Mania - Login/Cadastro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            box-sizing: border-box;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            display: inline-block;
+            margin: 0.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login/Cadastro</h1>
+        <div id="loginForm">
+            <h2>Login</h2>
+            <input type="text" id="loginUsername" class="input" placeholder="Usuário ou Email">
+            <input type="password" id="loginPassword" class="input" placeholder="Senha">
+            <button class="button" onclick="login()">Entrar</button>
+            <p>Não tem uma conta? <a href="#" onclick="showCadastro()">Cadastre-se</a></p>
+        </div>
+
+        <div id="cadastroForm" style="display:none;">
+            <h2>Cadastro</h2>
+            <input type="text" id="cadastroUsername" class="input" placeholder="Nome de usuário">
+            <input type="email" id="cadastroEmail" class="input" placeholder="Email">
+            <input type="password" id="cadastroPassword" class="input" placeholder="Senha">
+            <button class="button" onclick="cadastrar()">Cadastrar</button>
+            <p>Já tem uma conta? <a href="#" onclick="showLogin()">Faça Login</a></p>
+        </div>
+    </div>
+    <script>
+        function showCadastro() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('cadastroForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('cadastroForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('https://api.greb.com.br/functions/code_04d39d/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                   alert('Login bem-sucedido!');
+                   window.location.href = 'game.html';
+                } else {
+                    alert(data.message || 'Erro ao logar.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+
+        async function cadastrar() {
+            const username = document.getElementById('cadastroUsername').value;
+            const email = document.getElementById('cadastroEmail').value;
+            const password = document.getElementById('cadastroPassword').value;
+
+           try {
+                const response = await fetch('https://api.greb.com.br/functions/code_04d39d/create_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                     alert('Cadastro bem-sucedido! Faça login.');
+                     showLogin();
+                } else {
+                    alert(data.message || 'Erro ao cadastrar.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+    </script>
+</body>
+</html>
