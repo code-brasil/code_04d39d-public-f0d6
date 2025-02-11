@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dama Mania - Jogo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+        }
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .black {
+            background-color: #777;
+        }
+        .white {
+            background-color: #eee;
+        }
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .red {
+            background-color: red;
+        }
+        .black-piece {
+            background-color: black;
+        }
+        .selected {
+            background-color: yellow;
+        }
+
+        #chat-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+        #chat-messages {
+            height: 200px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+         #chat-input {
+            width: 80%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #send-button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dama Mania - Jogo</h1>
+        <div id="board"></div>
+
+        <div id="chat-container">
+            <h2>Chat</h2>
+            <div id="chat-messages"></div>
+            <div>
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+                <button id="send-button" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        let selectedPiece = null;
+
+        // Função para criar o tabuleiro
+        function createBoard() {
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square');
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    if ((row + col) % 2 === 0) {
+                        square.classList.add('white');
+                    }
+                    else {
+                        square.classList.add('black');
+                    }
+
+                     // Adiciona peças iniciais
+                    if (row < 3 && (row + col) % 2 !== 0) {
+                        const piece = document.createElement('div');
+                        piece.classList.add('piece', 'red');
+                        square.appendChild(piece);
+                    } else if (row > 4 && (row + col) % 2 !== 0) {
+                        const piece = document.createElement('div');
+                        piece.classList.add('piece', 'black-piece');
+                        square.appendChild(piece);
+                    }
+
+                    square.addEventListener('click', handleSquareClick);
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(event) {
+            const row = parseInt(event.target.dataset.row);
+            const col = parseInt(event.target.dataset.col);
+            const piece = event.target.querySelector('.piece');
+
+            if (selectedPiece) {
+                // Lógica de movimentação das peças aqui
+                console.log(`Movendo de: ${selectedPiece.parentNode.dataset.row}, ${selectedPiece.parentNode.dataset.col} para ${row}, ${col}`);
+                // Remover destaque da peça selecionada
+                selectedPiece.classList.remove('selected');
+                selectedPiece = null;
+            } else if (piece) {
+               // Seleciona peça
+                selectedPiece = piece;
+                selectedPiece.classList.add('selected');
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('chat-input');
+            const message = messageInput.value;
+            if (message.trim() !== '') {
+                // Enviar mensagem para o servidor (implementar a lógica do chat aqui)
+                addMessageToChat('Você:', message);
+                messageInput.value = '';
+            }
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('p');
+            messageElement.textContent = `${sender} ${message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+
+        createBoard();
+    </script>
+</body>
+</html>
